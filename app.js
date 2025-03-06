@@ -15,9 +15,9 @@ const students = [
   { name: "Alexandra", day: "Wednesday", time: "6:30 PM", duration: "45 minutes" },
   { name: "Ryken", day: "Wednesday", time: "7:15 PM", duration: "30 minutes" },
   { name: "Callaway & Samuel", day: "Wednesday", time: "7:45 PM", duration: "1 hour" },
-  { name: "Gwen", day: "Thursday", time: "1:00 PM", duration: "30 minutes" },
-  { name: "Valerie", day: "Thursday", time: "6:00 PM", duration: "30 minutes" },
-  { name: "Dillon", day: "Thursday", time: "6:30 PM", duration: "30 minutes" }
+  { name: "Ved", day: "Thursday", time: "6:00 PM", duration: "30 minutes" },
+  { name: "Valerie", day: "Wednesday", time: "4:30 PM", duration: "30 minutes" },
+  { name: "Dillon", day: "Thursday", time: "5:00 PM", duration: "30 minutes" }
 ];
 
 const SuzukiReviewChart = () => {
