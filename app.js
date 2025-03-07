@@ -20,6 +20,10 @@ const students = [
   { name: "Dillon", day: "Thursday", time: "5:00 PM", duration: "30 minutes" }
 ];
 
+// Helper function to create a storage key using a sanitized student name.
+const getStorageKey = (base, student) =>
+  `${base}_${student.replace(/\W/g, "")}`;
+
 const SuzukiReviewChart = () => {
   // State for student selection.
   const [selectedStudent, setSelectedStudent] = React.useState("");
@@ -106,9 +110,10 @@ const SuzukiReviewChart = () => {
   // When a student is selected, load their data from localStorage.
   React.useEffect(() => {
     if (selectedStudent) {
-      const cp = localStorage.getItem(`completedPractices_${selectedStudent}`);
-      const cd = localStorage.getItem(`currentDay_${selectedStudent}`);
-      const tn = localStorage.getItem(`teacherNotes_${selectedStudent}`);
+      const keyPrefix = getStorageKey("", selectedStudent);
+      const cp = localStorage.getItem(`completedPractices${keyPrefix}`);
+      const cd = localStorage.getItem(`currentDay${keyPrefix}`);
+      const tn = localStorage.getItem(`teacherNotes${keyPrefix}`);
       setCompletedPractices(cp ? JSON.parse(cp) : {});
       setCurrentDay(cd ? Number(cd) : 1);
       setTeacherNotes(tn || "");
@@ -118,19 +123,22 @@ const SuzukiReviewChart = () => {
   // Save student data to localStorage when it changes.
   React.useEffect(() => {
     if (selectedStudent) {
-      localStorage.setItem(`completedPractices_${selectedStudent}`, JSON.stringify(completedPractices));
+      const keyPrefix = getStorageKey("", selectedStudent);
+      localStorage.setItem(`completedPractices${keyPrefix}`, JSON.stringify(completedPractices));
     }
   }, [completedPractices, selectedStudent]);
 
   React.useEffect(() => {
     if (selectedStudent) {
-      localStorage.setItem(`currentDay_${selectedStudent}`, currentDay);
+      const keyPrefix = getStorageKey("", selectedStudent);
+      localStorage.setItem(`currentDay${keyPrefix}`, currentDay);
     }
   }, [currentDay, selectedStudent]);
 
   React.useEffect(() => {
     if (selectedStudent) {
-      localStorage.setItem(`teacherNotes_${selectedStudent}`, teacherNotes);
+      const keyPrefix = getStorageKey("", selectedStudent);
+      localStorage.setItem(`teacherNotes${keyPrefix}`, teacherNotes);
     }
   }, [teacherNotes, selectedStudent]);
 
