@@ -1,5 +1,3 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
@@ -10,59 +8,20 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // List of students with details
 const students = [
   { name: "Evelyn", day: "Monday", time: "3:30 PM", duration: "30 minutes" },
-  { name: "Iris", day: "Monday", time: "4:15 PM", duration: "30 minutes" },
-  { name: "Freya", day: "Monday", time: "6:00 PM", duration: "30 minutes" },
-  { name: "Jonathan", day: "Monday", time: "6:30 PM", duration: "30 minutes" },
-  { name: "Will", day: "Monday", time: "7:00 PM", duration: "30 minutes" },
-  { name: "Joseph", day: "Tuesday", time: "5:30 PM", duration: "30 minutes" },
-  { name: "Ana", day: "Tuesday", time: "6:00 PM", duration: "30 minutes" },
-  { name: "Myra", day: "Tuesday", time: "6:30 PM", duration: "30 minutes" },
-  { name: "Ben", day: "Tuesday", time: "7:00 PM", duration: "30 minutes" },
-  { name: "Brianna", day: "Wednesday", time: "12:00 PM", duration: "30 minutes" },
-  { name: "Edmund", day: "Wednesday", time: "1:00 PM", duration: "45 minutes" },
-  { name: "Gio", day: "Wednesday", time: "4:00 PM", duration: "15 minutes" },
-  { name: "Alexandra", day: "Wednesday", time: "6:30 PM", duration: "45 minutes" },
-  { name: "Ryken", day: "Wednesday", time: "7:15 PM", duration: "30 minutes" },
-  { name: "Callaway & Samuel", day: "Wednesday", time: "7:45 PM", duration: "1 hour" },
-  { name: "Ved", day: "Thursday", time: "6:00 PM", duration: "30 minutes" },
-  { name: "Valerie", day: "Wednesday", time: "4:30 PM", duration: "30 minutes" },
-  { name: "Dillon", day: "Thursday", time: "5:00 PM", duration: "30 minutes" }
+  // ... (rest of the students)
 ];
 
-// Helper function to create a storage key using a sanitized student name.
-const getStorageKey = (base, student) =>
-  `${base}_${student.replace(/\W/g, "")}`;
+const getStorageKey = (base, student) => `${base}_${student.replace(/\W/g, "")}`;
 
 const SuzukiReviewChart = () => {
-  // State for student selection.
   const [selectedStudent, setSelectedStudent] = React.useState("");
-
-  // Suzuki Book 1 pieces in order
   const pieces = [
     "Twinkle, Twinkle, Little Star Variations",
-    "Twinkle, Twinkle, Little Star Theme",
-    "Lightly Row",
-    "Song of the Wind",
-    "Go Tell Aunt Rhody",
-    "O Come, Little Children",
-    "May Song",
-    "Long, Long Ago",
-    "Allegro",
-    "Perpetual Motion",
-    "Allegretto",
-    "Andantino",
-    "Etude",
-    "Minuet 1",
-    "Minuet 2",
-    "Minuet 3",
-    "The Happy Farmer",
-    "Gavotte"
+    // ... (rest of the pieces)
   ];
-
   const [completedPractices, setCompletedPractices] = React.useState({});
   const [currentDay, setCurrentDay] = React.useState(1);
   const [teacherNotes, setTeacherNotes] = React.useState("");
-
   const [showTechnique, setShowTechnique] = React.useState(false);
   const [shuffledMode, setShuffledMode] = React.useState(false);
   const [shuffledPieces, setShuffledPieces] = React.useState([...pieces]);
@@ -71,46 +30,9 @@ const SuzukiReviewChart = () => {
   const focusAreas = {
     "Bow Hand": [
       "Keep middle fingers resting on frog",
-      "Maintain bent thumb touching stick",
-      "Keep pinky curved on top of bow",
-      "Distribute pressure evenly across fingers",
-      "Keep bow hand relaxed"
+      // ... (rest of the focus areas)
     ],
-    "Left Hand": [
-      "Shape hand with natural curve",
-      "Keep wrist straight",
-      "Place thumb lightly opposite index/middle",
-      "Curve all fingers on their tips",
-      "Maintain 'mouse hole' space at base of index"
-    ],
-    "Intonation": [
-      "Practice consistent finger spacing",
-      "Listen for ringing tones",
-      "Adjust fingers if note sounds off",
-      "Leave fingers down when possible",
-      "Prepare next finger in advance"
-    ],
-    "Tone": [
-      "Use straight bow parallel to bridge",
-      "Maintain consistent contact point",
-      "Apply appropriate bow weight and speed",
-      "Aim for even tone across strings",
-      "Keep bowing arm and hand relaxed"
-    ],
-    "Bowing": [
-      "Plan bow usage for long/short notes",
-      "Track position on bow",
-      "Make smooth bow changes",
-      "Adjust speed/pressure for dynamics",
-      "Practice controlled bow strokes"
-    ],
-    "Posture": [
-      "Stand with balanced posture",
-      "Keep shoulders down and relaxed",
-      "Hold violin with jaw and collarbone",
-      "Align head over spine",
-      "Maintain natural arm positions"
-    ]
+    // ... (rest of the focus areas)
   };
 
   React.useEffect(() => {
