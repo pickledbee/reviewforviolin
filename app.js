@@ -1,3 +1,12 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { createClient } from '@supabase/supabase-js';
+
+// Supabase configuration
+const supabaseUrl = 'https://gtyzoghbttbeqvpdspyq.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0eXpvZ2hidHRiZXF2cGRzcHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzNjQ1MTEsImV4cCI6MjA1Njk0MDUxMX0.-Pf0uk0uKg0-UegxXVXxzKW_CdCSPjYhzTv6SeWbnnw';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 // List of students with details
 const students = [
   { name: "Evelyn", day: "Monday", time: "3:30 PM", duration: "30 minutes" },
@@ -50,18 +59,15 @@ const SuzukiReviewChart = () => {
     "Gavotte"
   ];
 
-  // Student-specific states (these are reloaded whenever a student is selected)
   const [completedPractices, setCompletedPractices] = React.useState({});
   const [currentDay, setCurrentDay] = React.useState(1);
   const [teacherNotes, setTeacherNotes] = React.useState("");
 
-  // Other states
   const [showTechnique, setShowTechnique] = React.useState(false);
   const [shuffledMode, setShuffledMode] = React.useState(false);
   const [shuffledPieces, setShuffledPieces] = React.useState([...pieces]);
   const [reviewSchedule, setReviewSchedule] = React.useState([]);
 
-  // Technical focus areas
   const focusAreas = {
     "Bow Hand": [
       "Keep middle fingers resting on frog",
@@ -107,42 +113,38 @@ const SuzukiReviewChart = () => {
     ]
   };
 
-  // When a student is selected, load their data from localStorage.
   React.useEffect(() => {
     if (selectedStudent) {
       const keyPrefix = getStorageKey("", selectedStudent);
-      const cp = localStorage.getItem(`completedPractices${keyPrefix}`);
-      const cd = localStorage.getItem(`currentDay${keyPrefix}`);
-      const tn = localStorage.getItem(`teacherNotes${keyPrefix}`);
-      setCompletedPractices(cp ? JSON.parse(cp) : {});
-      setCurrentDay(cd ? Number(cd) : 1);
-      setTeacherNotes(tn || "");
+      supabase
+        .from('students')
+        .select('*')
+        .eq('name', selectedStudent)
+        .single()
+        .then(({ data, error }) => {
+          if (data) {
+            setCompletedPractices(data.completedPractices || {});
+            setCurrentDay(data.currentDay || 1);
+            setTeacherNotes(data.teacherNotes || "");
+          }
+        });
     }
   }, [selectedStudent]);
 
-  // Save student data to localStorage when it changes.
   React.useEffect(() => {
     if (selectedStudent) {
       const keyPrefix = getStorageKey("", selectedStudent);
-      localStorage.setItem(`completedPractices${keyPrefix}`, JSON.stringify(completedPractices));
+      supabase
+        .from('students')
+        .upsert({
+          name: selectedStudent,
+          completedPractices,
+          currentDay,
+          teacherNotes
+        });
     }
-  }, [completedPractices, selectedStudent]);
+  }, [completedPractices, currentDay, teacherNotes, selectedStudent]);
 
-  React.useEffect(() => {
-    if (selectedStudent) {
-      const keyPrefix = getStorageKey("", selectedStudent);
-      localStorage.setItem(`currentDay${keyPrefix}`, currentDay);
-    }
-  }, [currentDay, selectedStudent]);
-
-  React.useEffect(() => {
-    if (selectedStudent) {
-      const keyPrefix = getStorageKey("", selectedStudent);
-      localStorage.setItem(`teacherNotes${keyPrefix}`, teacherNotes);
-    }
-  }, [teacherNotes, selectedStudent]);
-
-  // Create 6-day review cycle with 3 pieces per day
   React.useEffect(() => {
     updateReviewSchedule();
   }, [shuffledMode, shuffledPieces]);
@@ -151,8 +153,7 @@ const SuzukiReviewChart = () => {
     const schedule = [];
     let dayCounter = 1;
     const piecesList = shuffledMode ? shuffledPieces : pieces;
-    
-    // Build the schedule from the end of the pieces list.
+
     for (let i = piecesList.length - 1; i >= 0; i -= 3) {
       const dayPieces = [];
       for (let j = 0; j < 3; j++) {
@@ -172,7 +173,6 @@ const SuzukiReviewChart = () => {
     setReviewSchedule(schedule);
   };
 
-  // Toggle completion status for a piece.
   const toggleCompletion = (day, piece) => {
     const key = `${day}-${piece}`;
     setCompletedPractices(prev => ({
@@ -181,7 +181,6 @@ const SuzukiReviewChart = () => {
     }));
   };
 
-  // Calculate progress for the given day.
   const calculateProgress = (day) => {
     const dayPieces = reviewSchedule.find(d => d.day === day)?.pieces || [];
     if (dayPieces.length === 0) return 0;
@@ -192,24 +191,20 @@ const SuzukiReviewChart = () => {
     return Math.round((completed / dayPieces.length) * 100);
   };
 
-  // Retrieve details for the current focus area.
   const getCurrentFocusDetails = () => {
     const focusAreaName = reviewSchedule.find(d => d.day === currentDay)?.focusArea;
     return focusAreas[focusAreaName] || [];
   };
 
-  // Reset progress for the current student.
   const resetProgress = () => {
     setCompletedPractices({});
   };
 
-  // Start a new week.
   const startNewWeek = () => {
     resetProgress();
     setCurrentDay(1);
   };
 
-  // Shuffle pieces for a varied review order.
   const shufflePieces = () => {
     const piecesToShuffle = [...pieces];
     for (let i = piecesToShuffle.length - 1; i > 0; i--) {
@@ -225,7 +220,6 @@ const SuzukiReviewChart = () => {
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-center mb-6 text-indigo-800">Suzuki Book 1 Review Chart</h1>
       
-      {/* Student Selection Dropdown */}
       <div className="mb-6">
         <label className="block text-lg font-medium text-gray-700 mb-2">Select Your Name:</label>
         <select
@@ -242,7 +236,6 @@ const SuzukiReviewChart = () => {
         </select>
       </div>
 
-      {/* Only display review tools when a student is selected */}
       {selectedStudent ? (
         <>
           <div className="mb-8">
@@ -397,7 +390,6 @@ const SuzukiReviewChart = () => {
             </div>
           </div>
 
-          {/* Teacher Notes Box */}
           <div className="mt-6">
             <h3 className="text-lg font-semibold mb-3">Teacher Notes</h3>
             <textarea
@@ -408,7 +400,7 @@ const SuzukiReviewChart = () => {
               rows={4}
             ></textarea>
             <p className="text-sm text-gray-500 mt-1">
-              Your notes are saved to your browser's storage and will persist on this device for your review.
+              Your notes are saved to the cloud and will persist across all your devices.
             </p>
           </div>
         </>
